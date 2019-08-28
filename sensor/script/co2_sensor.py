@@ -8,28 +8,27 @@ import rospy
 from std_msgs.msg import *
 
 nanoSerial = serial.Serial("/dev/ttyUSB0", 9600) 
-co2_int=0
+
 
 def arduino_driver():
-    while True:
-        global co2
-        global co2_int
+    while not rospy.is_shutdown():
         c=''
         co2=''
         c=nanoSerial.read()
         if c=='S':
             c=nanoSerial.read()
-            if c=='S':
-                c=nanoSerial.read(4)
-                co2=c[0:4]
-                co2_int=int(co2,10)
-                print(co2_int)
+            if c=='C':
+                c=nanoSerial.read(5)
+                if c[4]=='E':
+                    co2=c[0:4]
+                    co2_int=int(co2,10)
+                    print(co2_int)
                     
 
     
         
 def talker():
-    rospy.init_node('co2_sensor', anonymous=True)
+    
     co2_sensor= rospy.Publisher('co2_sensor',Int16, queue_size=10)
     
    
@@ -40,15 +39,12 @@ def talker():
         rate.sleep()
 
 if __name__ == '__main__':
-    # t = threading.Thread(target=startCherry)
-    # t.daemon = True
-    # t.start()
+    rospy.init_node('co2_sensor', anonymous=False)
 
-    t2 = threading.Thread(target=arduino_driver)
-    t2.daemon = True
-    t2.start()
-    while True:
-        try:
-            talker()
-        except rospy.ROSInterruptException:
-            pass
+    try:
+        arduino_driver()
+    except rospy.ROSInterruptException:
+        print 'failed'
+        pass
+
+    rospy.spin()
