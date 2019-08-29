@@ -23,24 +23,25 @@ def arduino_driver():
                     co2=c[0:4]
                     co2_int=int(co2,10)
                     print(co2_int)
+                    co2_sensor.publish(co2_int)
                     
 
     
         
-def talker():
+# def talker():
     
-    co2_sensor= rospy.Publisher('co2_sensor',Int16, queue_size=10)
+    
     
    
     
-    rate = rospy.Rate(1) # 10hz
-    while not rospy.is_shutdown():
-        co2_sensor.publish(co2_int)
-        rate.sleep()
+#     rate = rospy.Rate(1) # 10hz
+#     while not rospy.is_shutdown():
+#         co2_sensor.publish(co2_int)
+#         rate.sleep()
 
 if __name__ == '__main__':
     rospy.init_node('co2_sensor', anonymous=False)
-
+    co2_sensor= rospy.Publisher('co2_sensor',Int16, queue_size=10)
     try:
         arduino_driver()
     except rospy.ROSInterruptException:
