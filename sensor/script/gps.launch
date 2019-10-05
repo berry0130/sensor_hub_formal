@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="sensor" pkg="sensor" type="sensor_hub.py" respawn="true" respawn_delay="30"/>
+</launch>
